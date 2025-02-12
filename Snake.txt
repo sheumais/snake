@@ -1,0 +1,8 @@
+## Title: Snake
+## Author: TheMrPancake
+## Version: 1.0
+## APIVersion: 101044
+## SavedVariables: SnakeSavedVariables
+
+Snake.lua
+Snake.xml
