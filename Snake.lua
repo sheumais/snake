@@ -1,6 +1,6 @@
 SnakeGame = SnakeGame or {}
 SnakeGame.name = "SnakeGame"
-SnakeGame.version = "1.1"
+SnakeGame.version = "1.2"
 SnakeGame.author = "TheMrPancake"
 SnakeGame.gameBoard = {}
 SnakeGame.snake = {}
@@ -14,6 +14,7 @@ SnakeGame.defaults = {
     total_earned = 0,
 }
 SnakeGame.timer = 0
+SnakeGame.timer_total = 0
 SnakeGame.directionQueue = {}
 
 local BOARD_SIZE = 25
@@ -100,11 +101,13 @@ local function ResetSnakeGame()
     SpawnFood()
     SnakeGame.direction = "RIGHT"
     SnakeGame.StartSnakeGame()
+    SnakeGame.timer_total = 0
+    SnakeGame.timer = GetTimeStamp()
 end
 
 local function UpdateUI()
     local timer = GetTimeStamp() - SnakeGame.timer
-    local formatted_timer = string.format("%01d:%02d", math.floor(timer / 60), timer % 60)
+    local formatted_timer = string.format("%01d:%02d", math.floor((SnakeGame.timer_total + timer) / 60), (SnakeGame.timer_total + timer) % 60)
     SnakeGameTopLevelControl_Title_SnakeName:SetText("Snake - " .. formatted_timer)
     SnakeGameTopLevelControl_Title_Scores:SetText("Current: " .. (#SnakeGame.snake - 3) .. " - Best: " .. SnakeGame.savedVariables.highscore)
 end
@@ -200,6 +203,7 @@ local function CreateSnakeUI()
             SnakeGame.StartSnakeGame()
         elseif newState == SCENE_HIDDEN then
             PauseSnakeGame()
+            SnakeGame.timer_total = SnakeGame.timer_total + GetTimeStamp() - SnakeGame.timer
         end
     end)
 
