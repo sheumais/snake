@@ -1,6 +1,7 @@
 ## Title: Snake
 ## Author: TheMrPancake
 ## Version: 1.0
+## Description: /snake to play
 ## APIVersion: 101044
 ## SavedVariables: SnakeSavedVariables
 
