@@ -1,6 +1,6 @@
 SnakeGame = SnakeGame or {}
 SnakeGame.name = "SnakeGame"
-SnakeGame.version = "1.0"
+SnakeGame.version = "1.1"
 SnakeGame.author = "TheMrPancake"
 SnakeGame.gameBoard = {}
 SnakeGame.snake = {}
@@ -14,6 +14,7 @@ SnakeGame.defaults = {
     total_earned = 0,
 }
 SnakeGame.timer = 0
+SnakeGame.directionQueue = {}
 
 local BOARD_SIZE = 25
 local CELL_SIZE = 32
@@ -108,10 +109,24 @@ local function UpdateUI()
     SnakeGameTopLevelControl_Title_Scores:SetText("Current: " .. (#SnakeGame.snake - 3) .. " - Best: " .. SnakeGame.savedVariables.highscore)
 end
 
+local function ProcessDirectionQueue()
+    if #SnakeGame.directionQueue > 0 then
+        local newDirection = table.remove(SnakeGame.directionQueue)
+        if (newDirection == "UP" and SnakeGame.direction ~= "DOWN") or
+           (newDirection == "DOWN" and SnakeGame.direction ~= "UP") or
+           (newDirection == "LEFT" and SnakeGame.direction ~= "RIGHT") or
+           (newDirection == "RIGHT" and SnakeGame.direction ~= "LEFT") then
+            SnakeGame.direction = newDirection
+            SnakeGame.directionQueue = {}
+        end
+    end
+end
+
 local function MoveSnake()
     local head = SnakeGame.snake[1]
     local newHead = {x = head.x, y = head.y}
     UpdateUI()
+    ProcessDirectionQueue()
     if SnakeGame.direction == "" then return end
 
     if SnakeGame.direction == "UP" then
@@ -191,21 +206,13 @@ local function CreateSnakeUI()
     SnakeGameTopLevelControl:SetHandler("OnKeyDown", function(self,key,ctrl,alt,shift,command)
         if shift or key == KEY_LWINDOWS then return end
         if key == KEY_W or key == KEY_UPARROW then
-            if SnakeGame.direction ~= "DOWN" then 
-                SnakeGame.direction = "UP"
-            end
+            table.insert(SnakeGame.directionQueue, "UP")
         elseif key == KEY_S or key == KEY_DOWNARROW and not shift then
-            if SnakeGame.direction ~= "UP" then
-                SnakeGame.direction = "DOWN"
-            end
+            table.insert(SnakeGame.directionQueue, "DOWN")
         elseif key == KEY_A or key == KEY_LEFTARROW then
-            if SnakeGame.direction ~= "RIGHT" then
-                SnakeGame.direction = "LEFT"
-            end
+            table.insert(SnakeGame.directionQueue, "LEFT")
         elseif key == KEY_D or key == KEY_RIGHTARROW then
-            if SnakeGame.direction ~= "LEFT" then
-                SnakeGame.direction = "RIGHT"
-            end
+            table.insert(SnakeGame.directionQueue, "RIGHT")
         else
             SnakeGame.ToggleSnakeUI()
         end
